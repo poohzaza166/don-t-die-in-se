@@ -16,9 +16,10 @@ public class Game {
     private int turn;
     private int turnState;
     public Brain[] brains;
-
     private Deck[] decks;
     private final Random rng = new Random();
+    private int width;
+    private int height;
 
     public Game() {
         this.turn = 0;
@@ -56,9 +57,11 @@ public class Game {
 
         Scanner sc = new Scanner(new FileReader("save.txt"));
         for (int i = 1; i < tileStart; i++) sc.nextLine();
-        int width = Integer.parseInt(sc.nextLine());
-        int height = Integer.parseInt(sc.nextLine());
+
+        this.width = Integer.parseInt(sc.nextLine());
+        this.height = Integer.parseInt(sc.nextLine());
         tiles = new Tile[width][height];
+
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 tiles[x][y] = new Tile(sc);
@@ -140,7 +143,7 @@ public class Game {
             uncontested = handleSuggestion(p, suggestion);
         }
 
-        if (uncontested && brains[p].makeAccusation(players, tiles, p)) {
+        if (uncontested && brains[p] != null && brains[p].makeAccusation(players, tiles, p)) {
             Card[] accusation = brains[p].cardsAccusation(players, tiles, p);
             if (handleAccusation(p, accusation)) {
                 System.out.println("Player " + p + " (" + player.getName() + ") wins!");
@@ -251,5 +254,21 @@ public class Game {
         for (int i = 0; i < brains.length; i++) {
             if (brains[i] != null) action.apply(brains[i], i);
         }
+    }
+
+    public Tile[][] getTiles() {
+        return tiles;
+    }
+
+    public Player[] getPlayers() {
+        return players;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }
