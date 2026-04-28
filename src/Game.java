@@ -21,6 +21,8 @@ public class Game {
     private int width;
     private int height;
     private final int requestedPlayerCount;
+    public int humanIndex;
+
 
     public int getPlayerCount() {
         return players.length;
@@ -90,11 +92,23 @@ public class Game {
         int playerCount = requestedPlayerCount;
         players = new Player[playerCount];
         if (brains == null) brains = new Brain[playerCount];
-        String[] names = {"Miss Scarlett", "Col Mustard", "Mrs White", "Rev Green", "Mrs Peacock", "Prof Plum"};
-        int[][] spawns = {{0, 0}, {width - 1, 0}, {0, height - 1}, {width - 1, height - 1}, {width / 2, 0}, {width / 2, height - 1}
-        };
+
+        List<String> nameList = new ArrayList<>(List.of(
+                "Miss Scarlett",
+                "Col Mustard",
+                "Mrs White",
+                "Rev Green",
+                "Mrs Peacock",
+                "Prof Plum"));
+
+
+        Collections.shuffle(nameList);
+
+        int[][] spawns = {{0, 0}, {width - 1, 0}, {0, height - 1}, {width - 1, height - 1}, {width / 2, 0}, {width / 2, height - 1}};
+
         for (int i = 0; i < playerCount; i++) {
-            players[i] = new Player(spawns[i][0], spawns[i][1], names[i]);
+            String assignedName = nameList.get(i);
+            players[i] = new Player(spawns[i][0], spawns[i][1], assignedName);
             tiles[spawns[i][0]][spawns[i][1]].isOccupied = true;
         }
 
@@ -115,12 +129,34 @@ public class Game {
         Card[] suspectCards = decks[0].getContents();
         Card[] weaponCards = decks[1].getContents();
         Card[] roomCardArr = decks[2].getContents();
+        humanIndex = new Random().nextInt(playerCount);
+
+
         for (int i = 0; i < playerCount; i++) {
-            if (brains[i] == null) {
+            if (i == humanIndex) {
+                brains[i] = null;
+            } else {
                 brains[i] = new RandomBrain(suspectCards, weaponCards, roomCardArr, rooms);
             }
         }
+
     }
+    // label player and AI on the game log
+    public String getDisplayName(int playerIndex) {
+        if (brains[playerIndex] == null) {
+            return players[playerIndex].getName() + " (player)";
+        }
+
+        int aiNumber = 0;
+        for (int i = 0; i <= playerIndex; i++) {
+            if (brains[i] != null) {
+                aiNumber++;
+            }
+        }
+
+        return "AI " + aiNumber;
+    }
+
 
     private void skipLines(BufferedReader br, int n) throws IOException {
         for (int i = 0; i < n; i++) br.readLine();

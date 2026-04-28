@@ -23,4 +23,9 @@
 hs_err_pid*
 replay_pid*
 target/ 
-.omc/ 
+.omc/
+
+# IntelliJ project files
+.idea/
+*.iml
+out/
